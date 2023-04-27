@@ -92,4 +92,21 @@ public class CategoryControllerTest {
 
         Assertions.assertTrue(result.getResponse().getContentAsString().isEmpty());
     }
+
+    @Test
+    void test_deleteCategoryByName() throws Exception{
+        CategoryDTO categoryDTO = CategoryDTO.builder()
+                .categoryName("Test Category").build();
+
+        doNothing().when(categoryService).deleteCategoryById("Test Category");
+
+        MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.delete("/categories/deleteByName/Test Category")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(categoryDTO));
+
+        MvcResult result = mockMvc.perform(mockRequest)
+                .andExpect(status().isOk()).andReturn();
+
+        Assertions.assertTrue(result.getResponse().getContentAsString().isEmpty());
+    }
 }

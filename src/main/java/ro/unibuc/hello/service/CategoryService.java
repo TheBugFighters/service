@@ -32,6 +32,10 @@ public class CategoryService {
         categoryRepository.deleteById(id);
     }
 
+    public void deleteCategoryByName(String categoryName) {
+        categoryRepository.deleteByName(categoryName);
+    }
+
     private CategoryDTO getCategoryDTOFromEntity(CategoryEntity category) {
         return CategoryDTO.builder().categoryName(category.getName()).build();
     }
