@@ -9,7 +9,7 @@ services:
       MONGODB_CONECTION_URL: mongodb://root:example@mongo:27017/
     restart: always
   mongo:
-    image: mongo:4.4.6
+    image: mongo:5.0.2
     restart: always
     ports:
       - 27017:27017
