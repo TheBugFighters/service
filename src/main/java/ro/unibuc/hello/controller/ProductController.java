@@ -1,21 +1,33 @@
 package ro.unibuc.hello.controller;
 
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ro.unibuc.hello.dto.ProductDTO;
 import ro.unibuc.hello.exception.EntityNotFoundException;
 import ro.unibuc.hello.service.ProductService;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
-@AllArgsConstructor
 @RequestMapping("/products")
 public class ProductController {
 
-    private final ProductService productService;
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    MeterRegistry metricsRegistry;
+
+    private final AtomicLong counter = new AtomicLong();
 
     @PostMapping("/addProduct")
+    @Timed(value = "hello.addProduct.time", description = "Time taken to add a new product")
+    @Counted(value = "hello.addProduct.count", description = "Times the endpoint /addProduct was called")
     public void addProduct(@RequestBody ProductDTO productDTO) throws EntityNotFoundException {
         productService.addProduct(productDTO);
     }
@@ -26,7 +38,10 @@ public class ProductController {
     }
 
     @GetMapping("/getProducts")
+    @Timed(value = "hello.getProducts.time", description = "Time taken to return all existing products")
+    @Counted(value = "hello.getProducts.count", description = "Times the list of all existing products was returned")
     public List<ProductDTO> getAllProducts() {
+        metricsRegistry.counter("my_non_aop_getProducts_metric", "endpoint", "getProducts").increment(counter.incrementAndGet());
         return productService.getProducts();
     }
 
