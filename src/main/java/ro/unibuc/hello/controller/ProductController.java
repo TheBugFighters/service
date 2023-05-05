@@ -46,7 +46,10 @@ public class ProductController {
     }
 
     @GetMapping("/{productId}")
+    @Timed(value = "hello.getProductsById.time", description = "Time taken to return a product by its Id")
+    @Counted(value = "hello.getProductsById.count", description = "Times the product was returned")
     public ProductDTO getProductById(@PathVariable String productId) throws EntityNotFoundException {
+        metricsRegistry.counter("my_non_aop_getProductById_metric", "endpoint", "getProductsById").increment(counter.incrementAndGet());
         return productService.getProductById(productId);
     }
 
@@ -66,7 +69,10 @@ public class ProductController {
     }
 
     @DeleteMapping("/deleteProduct/{id}")
+    @Timed(value = "hello.deleteProductById.time", description = "Time taken to delete a product by its Id")
+    @Counted(value = "hello.deleteProductById.count", description = "Times the product was deleted")
     public void deleteProductById(@PathVariable String id) {
+        metricsRegistry.counter("my_non_aop_deleteProductById_metric", "endpoint", "deleteProductById").increment(counter.incrementAndGet());
         productService.deleteProductById(id);
     }
 }
